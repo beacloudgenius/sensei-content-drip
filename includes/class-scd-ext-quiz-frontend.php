@@ -51,9 +51,9 @@ protected $drip_message;
 public function __construct(){
 
 	// set a formatted  message shown to user when the content has not yet dripped
-	$defaultMessage = __( 'This quiz will become available on [date].', 'sensei-content-drip' ) ;
-	$settingsMessage =  Sensei_Content_Drip()->settings->get_setting( 'scd_drip_quiz_message' ) ;
-	$this->message_format = empty( $settingsMessage ) ? $defaultMessage : $settingsMessage ;
+	$default_message = 'This quiz will become available on [date].';
+	$settings_field=  'scd_drip_quiz_message';
+    $this->message_format = Sensei_Content_Drip()->utils->check_for_translation($default_message, $settings_field );
 
 	// hook int all post of type quiz to determine if they should be
 	add_filter('the_posts', array( $this, 'quiz_content_drip_filter' ), 1 );

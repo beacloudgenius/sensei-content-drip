@@ -49,9 +49,9 @@ protected $drip_message;
 public function __construct(){
 
 	// set a formatted  message shown to user when the content has not yet dripped
-	$defaultMessage = __( 'This lesson will become available on [date].', 'sensei-content-drip' ) ;
-	$settingsMessage =  Sensei_Content_Drip()->settings->get_setting( 'scd_drip_message' ) ;
-	$this->message_format = empty( $settingsMessage ) ? $defaultMessage : $settingsMessage ;
+    $default_message = 'This lesson will become available on [date].';
+    $settings_field =  'scd_drip_message';
+    $this->message_format = Sensei_Content_Drip()->utils->check_for_translation($default_message, $settings_field );
 
 }// end __construct()
 
