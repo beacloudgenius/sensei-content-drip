@@ -304,19 +304,6 @@ class Scd_Ext_Drip_Email {
 		// $wrap_footer
 		extract( $email_wrappers );
 
-		// get the settings values
-		$settings['email_body_notice'] = Sensei_Content_Drip()->settings->get_setting('scd_email_body_notice_html') ;
-		$settings['email_footer'] = Sensei_Content_Drip()->settings->get_setting( 'scd_email_footer_html' );
-
-		// check for empty settings and setup the defaults
-		if( empty( $settings['email_body_notice'] ) ){
-			$settings['email_body_notice'] = __( 'The following lessons will become available today:' , 'sensei-content-drip' );
-		}
-
-		if( empty( $settings['email_footer'] ) ){
-			$settings['email_footer'] = __(  'Visit the online course today to start taking the lessons: [home_url]' , 'sensei-content-drip' );
-		}
-
 		// setup the  the message content
 
         /**
@@ -327,12 +314,21 @@ class Scd_Ext_Drip_Email {
          * @param string $email_greeting Defaults to "Good Day $first_name"
          * @param int $user_id
          */
+
+        $body_default_message = 'The following lessons will become available today:';
+        $body_settings_field =  'scd_email_body_notice_html';
+        $email_body_text = Sensei_Content_Drip()->utils->check_for_translation( $body_default_message, $body_settings_field );
+
 		$email_greeting = '<p>' . apply_filters( 'scd_email_greeting', __('Good Day', 'sensei-content-drip' ). ' ' . $first_name ) . '</p>';
-		$email_body_notice = '<p>'. $settings['email_body_notice'] . '</p>';
+		$email_body_notice = '<p>'. $email_body_text . '</p>';
 		$email_body_lessons = '';
 
 		// get the footer from the settings and replace the shortcode [home_url] with the actual site url
-		$email_footer = '<p>'. str_ireplace('[home_url]'  , '<a href="'.esc_attr( home_url() ) .'" >'.esc_html( home_url() ).'</a>' , $settings['email_footer'] ) . '</p>';
+        $footer_default_message = 'Visit the online course today to start taking the lessons: [home_url]';
+        $footer_settings_field =  'scd_email_footer_html';
+        $email_footer_text = Sensei_Content_Drip()->utils->check_for_translation( $footer_default_message, $footer_settings_field );
+
+		$email_footer = '<p>'. str_ireplace('[home_url]'  , '<a href="'.esc_attr( home_url() ) .'" >'.esc_html( home_url() ).'</a>' , $email_footer_text ) . '</p>';
 
 		// loop through each lesson to get its title and relative url
 		$email_body_lessons .= '<p><ul>';
