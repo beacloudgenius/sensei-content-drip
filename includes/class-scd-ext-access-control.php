@@ -48,9 +48,9 @@ class Scd_Ext_Access_Control {
 	 */
 	public function __construct() {
 		// Set a formatted  message shown to user when the content has not yet dripped
-		$defaultMessage       = __( 'This lesson will become available on [date].', 'sensei-content-drip' );
-		$settingsMessage      = Sensei_Content_Drip()->settings->get_setting( 'scd_drip_message' );
-		$this->message_format = empty( $settingsMessage ) ? $defaultMessage : $settingsMessage;
+		$default_message      = esc_html__( 'This lesson will become available on [date].', 'sensei-content-drip' );
+		$settings_message     = Sensei_Content_Drip()->settings->get_setting( 'scd_drip_message' );
+		$this->message_format = empty( $settings_message ) ? $default_message : $settings_message;
 	}
 
 	/**
@@ -63,7 +63,7 @@ class Scd_Ext_Access_Control {
 	 */
 	public function is_lesson_access_blocked( $lesson_id ) {
 		$content_access_blocked = false;
-		$lesson_course_id       = Sensei()->lesson->get_course_id( $lesson_id );
+		$lesson_course_id       = absint( Sensei()->lesson->get_course_id( $lesson_id ) );
 
 		// Return drip not active for the following conditions.
 		if ( is_super_admin() || empty( $lesson_id ) || 'lesson' !== get_post_type( $lesson_id )
@@ -95,7 +95,7 @@ class Scd_Ext_Access_Control {
 		$content_access_blocked = apply_filters( 'scd_is_drip_active' , $content_access_blocked , $lesson_id ); // backward compatible
 		$content_access_blocked = apply_filters( 'scd_lesson_content_access_blocked' , $content_access_blocked , $lesson_id );
 
-		return $content_access_blocked;
+		return (bool) $content_access_blocked;
 	}
 
 	/**
@@ -195,7 +195,7 @@ class Scd_Ext_Access_Control {
 	 * @param  string $user_id
 	 * @return DateTime drip_date format yyyy-mm-dd
 	 */
-	public function get_lesson_drip_date( $lesson_id , $user_id = '' ) {
+	public function get_lesson_drip_date( $lesson_id, $user_id = '' ) {
 		// Setup the basics, drip date default return will be false on error
 		$drip_date = false;
 
@@ -219,7 +219,6 @@ class Scd_Ext_Access_Control {
 			}
 
 			$drip_date = new DateTime( $lesson_set_date );
-
 		} elseif ( 'dynamic' === $drip_type ) {
 			// Get the drip details array data
 			$unit_type   = get_post_meta( $lesson_id , '_sensei_content_drip_details_date_unit_type', true );
@@ -237,7 +236,7 @@ class Scd_Ext_Access_Control {
 			$activity_query_args = array(
 				'post_id' => $course_id,
 				'user_id' => $user_id,
-				'type'    => 'sensei_course_status'
+				'type'    => 'sensei_course_status',
 			);
 
 			// Get the activity/comment data
